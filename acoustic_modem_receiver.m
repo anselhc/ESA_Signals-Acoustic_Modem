@@ -1,10 +1,11 @@
 load long_modem_rx.mat
 
-% The received signal includes a bunch of samples from before the
-% transmission started so we need discard these samples that occurred before
-% the transmission started. 
 SymbolPeriod = 100;
 signal_length = 122350;
+
+% The received signal includes a bunch of samples from before the
+% transmission started so we need discard these samples that occurred before
+% the transmission started.
 
 start_idx = find_start_of_signal(y_r,x_sync);
 % start_idx now contains the location in y_r where x_sync begins
@@ -17,14 +18,16 @@ t_vals = [0:length(y_t)-1]/Fs;
 cosine_transform = cos(2*pi*f_c*t_vals);
 y_c = y_t.*cosine_transform;
 
-t = [-10000:1:9999]*(1/Fs);
+t = [-100000:1:99999]*(1/Fs);
 W = 2*pi*f_c;
-lp = W/Fs * sinc(f_c*t); %normalize by dividing by fs
+lp = W/Fs * sinc(W/pi*t); %filter and normalize by dividing by fs
 x_d = conv(y_c, lp, 'same');
 
 % Convert to a string assuming that x_d is a vector of 1s and 0s
 % representing the decoded bits.
 x_d_bits = x_d(SymbolPeriod/2:SymbolPeriod:signal_length) > 0;
-
+x_d_bits = double(x_d_bits(1:123*8));
+% x_d_bits = xs<0
+% x_d_bits = x_d_bits(5:end - 4);
 BitsToString(x_d_bits)
-plot(t_vals, x_d); 
+plot(t_vals(1:30000), x_d(1:30000));
