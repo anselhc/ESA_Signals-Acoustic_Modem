@@ -1,9 +1,11 @@
-load short_modem_rx.mat
+load long_modem_rx.mat
 
 % The received signal includes a bunch of samples from before the
 % transmission started so we need discard these samples that occurred before
 % the transmission started. 
 SymbolPeriod = 100;
+signal_length = 122350;
+
 start_idx = find_start_of_signal(y_r,x_sync);
 % start_idx now contains the location in y_r where x_sync begins
 % we need to offset by the length of x_sync to only include the signal
@@ -22,7 +24,7 @@ x_d = conv(y_c, lp, 'same');
 
 % Convert to a string assuming that x_d is a vector of 1s and 0s
 % representing the decoded bits.
-x_d_bits = x_d(SymbolPeriod/2:SymbolPeriod:4000) > 0;
+x_d_bits = x_d(SymbolPeriod/2:SymbolPeriod:signal_length) > 0;
 
 BitsToString(x_d_bits)
 plot(t_vals, x_d); 
