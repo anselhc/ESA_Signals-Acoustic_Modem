@@ -1,7 +1,7 @@
 load long_modem_rx.mat
 
 SymbolPeriod = 100;
-signal_length = 122350;
+signal_length = 123*8;
 
 % The received signal includes a bunch of samples from before the
 % transmission started so we need discard these samples that occurred before
@@ -21,19 +21,23 @@ y_c = y_t.*cosine_transform;
 t = [-100000:1:99999]*(1/Fs);
 W = 2*pi*f_c;
 lp = W/Fs * sinc(W/pi*t); %filter and normalize by dividing by fs
+
+% lp = 40;
 x_d = conv(y_c, lp, 'same');
 
 % Convert to a string assuming that x_d is a vector of 1s and 0s
 % representing the decoded bits.
-x_d_bits = x_d(SymbolPeriod/2:SymbolPeriod:signal_length) > 0;
-x_d_bits = x_d_bits(1:123*8);
+x_d_bits = x_d(SymbolPeriod/2:SymbolPeriod:end) > 0;
+x_d_bits = x_d_bits(1:signal_length);
 BitsToString(x_d_bits)
 
 
 
 % Plots
+L = length(x_d)/2;
 
 % Transmitted signal
+frequency_response = abs(fft(y_t));
 figure
 subplot(2, 1, 1)
 plot(t_vals, y_t);
@@ -41,11 +45,12 @@ title('Raw transmitted signal')
 xlabel('Time (s)')
 ylabel('Response')
 subplot(2, 1, 2)
-plot(t_vals, fft(y_t), MarkerSize=1.75);
+stem(Fs/L*(0:L-1), frequency_response(1:L), MarkerSize=1.75);
 xlabel('Frequency (Hz)')
 ylabel('|fft(x)|')
 
 % Before filtering
+frequency_response = abs(fft(y_c));
 figure
 subplot(2, 1, 1)
 plot(t_vals, y_c);
@@ -53,11 +58,12 @@ title('Signal before filtering')
 xlabel('Time (s)')
 ylabel('Response')
 subplot(2, 1, 2)
-plot(t_vals, fft(y_c), MarkerSize=1.75);
+stem(Fs/L*(0:L-1), frequency_response(1:L), MarkerSize=1.75);
 xlabel('Frequency (Hz)')
 ylabel('|fft(x)|')
 
 % After filtering
+frequency_response = abs(fft(x_d));
 figure
 subplot(2, 1, 1)
 plot(t_vals, x_d);
@@ -65,7 +71,7 @@ title('Filtered signal')
 xlabel('Time (s)')
 ylabel('Response')
 subplot(2, 1, 2)
-stem(t_vals, fft(x_d), MarkerSize=1.75);
+stem(Fs/L*(0:L-1), frequency_response(1:L), MarkerSize=1.75);
 xlabel('Frequency (Hz)')
 ylabel('|fft(x)|')
 
