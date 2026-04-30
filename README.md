@@ -1,2 +1,2 @@
 # ESA_Signals-Acoustic_Modem
-Final project of ESA Signals Course
+For our final ESA Signals class project, we made a demo acoustic modem using Matlab. Acoustic modems transmit data over soundwaves and are often used in underwater wireless communication devices where electromagnetic waves are ineffective. Messages are multiplied with a high frequency carrier cosine wave where information is carried in the phase of the cosine. This waveform is then transmitted from a speaker to a receiver. The received signal is then multiplied by a cosine signal and low-pass filtered to produce an approximation of the original signal from which we can extract the bits needed to decode the message. The block diagram in Figure 1 below diagrams the complete transmitter/receiver system.
